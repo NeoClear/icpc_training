@@ -14,7 +14,8 @@ struct node
     node *fail;
     node *child[KIND];
     bool isEnd;
-    node(): fail(nil), isEnd(false) {
+    char value;
+    node(): fail(nil), isEnd(false), value(nil) {
         memset(child, nil, sizeof(child));
     }
 };
@@ -36,6 +37,7 @@ inline void insert(char *s)
             p->child[pos] = new node();
         }
         p = p->child[pos];
+        p->value = s[i];
     }
     p->isEnd = true;
 }
@@ -81,21 +83,28 @@ i64 query(char *s)
 {
     i64 i = 0;
     node *p = root;
-    i64 pos;
-    while (i < static_cast<i64>(strlen(s)) && !p->isEnd) {
-        pos = s[i] - 'a';
-        if (p->child[pos] != nil) {
-            i++;
-            p = p->child[pos];
-        }
-        if (p->fail == nil)
-            i++;
-        else
-            p = p->fail;
+
+}
+
+inline void print(node *n)
+{
+    cout<< n->value;
+    if (n->isEnd)
+        cout<< endl;
+    loz(i, KIND) {
+        if (n->child[i] != nil)
+            print(n->child[i]);
     }
-    if (p->isEnd)
-        return i;
-    return -1;
+}
+
+inline void print_fail(node *n)
+{
+    if (n->fail != nil)
+        cout<< n->value<< " -> "<< n->fail->value<< endl;
+    loz(i, KIND) {
+        if (n->child[i] != nil)
+            print_fail(n->child[i]);
+    }
 }
 
 int main()
@@ -103,13 +112,17 @@ int main()
     freopen("in.txt", "r", stdin);
     cin >>N;
     char tmp[MAX];
+    root->value = '*';
     loz(i, N) {
         cin >>tmp;
         insert(tmp);
+//        cout<< tmp<< endl;
     }
+    print(root);
     char src[MAX];
-    cin >>src;
+//    cin >>src;
     verify();
+    print_fail(root);
     cout<< query(src)<< endl;
     return 0;
 }
