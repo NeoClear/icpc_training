@@ -65,15 +65,6 @@ inline void verify()
                 }
                 if(tmp == nil)
                     p->child[i]->fail = root;
-//                while (tmp->child[i] == nil) {
-//                    if (tmp->fail == root) {
-//                        p->child[i]->fail = root;
-//                        break;
-//                    }
-//                    tmp = tmp->fail;
-//                }
-//                if (!p->child[i]->fail)
-//                    p->child[i]->fail = tmp->child[i];
             }
         }
     }
@@ -81,9 +72,25 @@ inline void verify()
 
 i64 query(char *s)
 {
-    i64 i = 0;
     node *p = root;
-
+    node *tmp;
+    i64 pos;
+    loz (i, strlen(s)) {
+        pos = s[i] - 'a';
+        while (p->child[pos] == nil && p != root)
+            p = p->fail;
+        p = p->child[pos];
+        if (p == nil)
+            p = root;
+        tmp = p;
+        i64 cur = 0;
+        while (tmp != root) {
+            if (tmp->isEnd)
+                cur++;
+            tmp = tmp->fail;
+        }
+        cout<< i<< " has "<< cur<< endl;
+    }
 }
 
 inline void print(node *n)
@@ -120,9 +127,9 @@ int main()
     }
     print(root);
     char src[MAX];
-//    cin >>src;
+    cin >>src;
     verify();
-    print_fail(root);
-    cout<< query(src)<< endl;
+//    print_fail(root);
+    query(src);
     return 0;
 }
