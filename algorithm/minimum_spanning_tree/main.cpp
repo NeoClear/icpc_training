@@ -10,9 +10,6 @@ typedef double f64;
 
 using namespace std;
 
-static i64 N;
-static i64 heap[inf];
-
 namespace io {
     i64 read_i64()
     {
@@ -55,81 +52,77 @@ namespace io {
         }
         return ans * f / divide;
     }
+
 }
 
+inline void db()
+{
+    cout<<"db"<<endl;
+}
 
 inline void init()
 {
     freopen("in.txt", "r", stdin);
-//    freopen("out.txt", "w", stdout);
-    N = io::read_i64();
-    loo(i, N) {
-        heap[i] = io::read_i64();
-    }
-
 }
 
-namespace core {
-    void shiftdown(i64 i)
+namespace sorting {
+    struct edge
     {
-        i64 t;
-        bool flag = true;
-        while (i * 2 <= N && flag) {
-            if (heap[i] > heap[i * 2])
-                t = i * 2;
-            else
-                t = i;
-            if (i * 2 + 1 <= N)
-                if (heap[t] > heap[i * 2 + 1])
-                    t = i * 2 + 1;
-            if (t != i) {
-                swap(heap[i], heap[t]);
-                i = t;
-            } else
-                flag = false;
+        i64 u;
+        i64 v;
+        i64 w;
+    };
+    static struct edge lines[inf];
+    static i64 N, M;
+    static i64 boss[inf];
+    namespace debug {
+        void print_egde()
+        {
+            loz(i, M) {
+                printf("%lld %lld %lld\n", lines[i].u, lines[i].v, lines[i].w);
+            }
         }
     }
-    void shiftup(i64 i)
+    i64 find_boss(i64 k) {
+        if (boss[k] == k)
+            return k;
+        boss[k] = find_boss(boss[k]);
+        return boss[k];
+    }
+    bool camp(struct edge s1, struct edge s2)
     {
-        bool flag = true;
-        while (i >= 1 && flag) {
-            if (heap[i] < heap[i / 2]) {
-                swap(heap[i], heap[i / 2]);
-                i /= 2;
-            } else
-                flag = false;
+        return s1.w < s2.w;
+    }
+    inline void prepare()
+    {
+        N = io::read_i64();
+        M = io::read_i64();
+        loo(i, N)
+            boss[i] = i;
+        loz(i, M) {
+            lines[i].u = io::read_i64();
+            lines[i].v = io::read_i64();
+            lines[i].w = io::read_i64();
         }
+        sort(lines, lines + M, camp);
     }
-    void build()
+    inline void run()
     {
-        for (i64 i = N / 2; i >= 1; i--) {
-            shiftdown(i);
-        }
-    }
-    i64 delete_min()
-    {
-        i64 m = heap[1];
-        heap[1] = heap[N];
-        N--;
-        shiftdown(1);
-        return m;
-    }
-}
-
-namespace debug {
-    void print_heap() {
-        loo (i, N) {
-            printf("%lld ", heap[i]);
+        prepare();
+        loz(i, M) {
+            if (find_boss(lines[i].u) == find_boss(lines[i].v))
+                continue;
+            printf("%lld %lld %lld\n", lines[i].u, lines[i].v, lines[i].w);
+            boss[find_boss(lines[i].v)] = find_boss(lines[i].u);
         }
     }
 }
+
+
 
 int main()
 {
     init();
-    core::build();
-    debug::print_heap();
-    while (N)
-        cout<< core::delete_min()<< " ";
+    sorting::run();
     return 0;
 }

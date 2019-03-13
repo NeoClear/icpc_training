@@ -10,9 +10,6 @@ typedef double f64;
 
 using namespace std;
 
-static i64 N;
-static i64 heap[inf];
-
 namespace io {
     i64 read_i64()
     {
@@ -55,81 +52,53 @@ namespace io {
         }
         return ans * f / divide;
     }
+
 }
 
+static i64 N, M;
 
+static i64 boss[inf];
+
+namespace debug {
+    void print_boss()
+    {
+        loo(i, N) {
+            cout<< boss[i]<< " <- "<< i<<endl;
+        }
+    }
+}
+i64 find_boss(i64 k)
+{
+    if (boss[k] == k)
+        return k;
+    boss[k] = find_boss(boss[k]);
+    return boss[k];
+}
 inline void init()
 {
     freopen("in.txt", "r", stdin);
-//    freopen("out.txt", "w", stdout);
     N = io::read_i64();
+    M = io::read_i64();
     loo(i, N) {
-        heap[i] = io::read_i64();
+        boss[i] = i;
     }
-
-}
-
-namespace core {
-    void shiftdown(i64 i)
-    {
-        i64 t;
-        bool flag = true;
-        while (i * 2 <= N && flag) {
-            if (heap[i] > heap[i * 2])
-                t = i * 2;
-            else
-                t = i;
-            if (i * 2 + 1 <= N)
-                if (heap[t] > heap[i * 2 + 1])
-                    t = i * 2 + 1;
-            if (t != i) {
-                swap(heap[i], heap[t]);
-                i = t;
-            } else
-                flag = false;
-        }
-    }
-    void shiftup(i64 i)
-    {
-        bool flag = true;
-        while (i >= 1 && flag) {
-            if (heap[i] < heap[i / 2]) {
-                swap(heap[i], heap[i / 2]);
-                i /= 2;
-            } else
-                flag = false;
-        }
-    }
-    void build()
-    {
-        for (i64 i = N / 2; i >= 1; i--) {
-            shiftdown(i);
-        }
-    }
-    i64 delete_min()
-    {
-        i64 m = heap[1];
-        heap[1] = heap[N];
-        N--;
-        shiftdown(1);
-        return m;
-    }
-}
-
-namespace debug {
-    void print_heap() {
-        loo (i, N) {
-            printf("%lld ", heap[i]);
-        }
+    loz(i, M) {
+        i64 l, r;
+        l = io::read_i64();
+        r = io::read_i64();
+        boss[find_boss(r)] = find_boss(l);
     }
 }
 
 int main()
 {
+    i64 flag = 0;
     init();
-    core::build();
-    debug::print_heap();
-    while (N)
-        cout<< core::delete_min()<< " ";
+    loo(i, N) {
+        if (i == boss[i])
+            flag++;
+    }
+    debug::print_boss();
+    cout<<flag<<endl;
     return 0;
 }

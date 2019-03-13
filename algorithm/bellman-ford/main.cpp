@@ -10,9 +10,6 @@ typedef double f64;
 
 using namespace std;
 
-static i64 N;
-static i64 heap[inf];
-
 namespace io {
     i64 read_i64()
     {
@@ -55,81 +52,91 @@ namespace io {
         }
         return ans * f / divide;
     }
+
 }
 
+struct line
+{
+    i64 p;
+    i64 v;
+    struct line *next;
+};
+
+static i64 N, M;
+static struct line *lines[inf];
+static i64 dis[inf];
+
+void insert(i64 p1, i64 p2, i64 v)
+{
+    struct line *q = static_cast<struct line *>(malloc(sizeof(line)));
+    q->p = p2;
+    q->v = v;
+    q->next = nil;
+    struct line *p = lines[p1];
+    if (p == nil)
+        lines[p1] = q;
+    else {
+        while (p->next != nil)
+            p = p->next;
+        p->next = q;
+    }
+}
 
 inline void init()
 {
     freopen("in.txt", "r", stdin);
-//    freopen("out.txt", "w", stdout);
     N = io::read_i64();
+    M = io::read_i64();
+    i64 p1, p2, v;
     loo(i, N) {
-        heap[i] = io::read_i64();
+//        cout<<"sa"<<endl;
+        dis[i] = inf;
+        lines[i] = nil;
     }
-
+    loz(i, M) {
+        p1 = io::read_i64();
+        p2 = io::read_i64();
+        v = io::read_i64();
+//        cout<<p1<<p2<<v<<endl;
+        insert(p1, p2, v);
+    }
+    dis[1] = 0;
+    struct line *p = lines[1];
+    while (p != nil) {
+        dis[p->p] = p->v;
+        p = p->next;
+    }
 }
 
-namespace core {
-    void shiftdown(i64 i)
-    {
-        i64 t;
-        bool flag = true;
-        while (i * 2 <= N && flag) {
-            if (heap[i] > heap[i * 2])
-                t = i * 2;
-            else
-                t = i;
-            if (i * 2 + 1 <= N)
-                if (heap[t] > heap[i * 2 + 1])
-                    t = i * 2 + 1;
-            if (t != i) {
-                swap(heap[i], heap[t]);
-                i = t;
-            } else
-                flag = false;
+void bellman_ford()
+{
+    loz(i, M) {
+        loo(j, N) {
+            struct line *p = lines[j];
+            while (p != nil) {
+                if (dis[p->p] > dis[j] + p->v)
+                    dis[p->p] = dis[j] + p->v;
+                p = p->next;
+            }
         }
-    }
-    void shiftup(i64 i)
-    {
-        bool flag = true;
-        while (i >= 1 && flag) {
-            if (heap[i] < heap[i / 2]) {
-                swap(heap[i], heap[i / 2]);
-                i /= 2;
-            } else
-                flag = false;
-        }
-    }
-    void build()
-    {
-        for (i64 i = N / 2; i >= 1; i--) {
-            shiftdown(i);
-        }
-    }
-    i64 delete_min()
-    {
-        i64 m = heap[1];
-        heap[1] = heap[N];
-        N--;
-        shiftdown(1);
-        return m;
     }
 }
 
 namespace debug {
-    void print_heap() {
-        loo (i, N) {
-            printf("%lld ", heap[i]);
+    void print_dis()
+    {
+        loo(i, N) {
+            cout<< dis[i]<< " ";
         }
+        cout<<endl;
     }
+
 }
 
 int main()
 {
     init();
-    core::build();
-    debug::print_heap();
-    while (N)
-        cout<< core::delete_min()<< " ";
+    bellman_ford();
+    debug::print_dis();
     return 0;
 }
