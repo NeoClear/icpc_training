@@ -118,7 +118,9 @@ namespace sorting {
     }
 }
 
+namespace dijkstra_style {
 
+}
 
 int main()
 {
