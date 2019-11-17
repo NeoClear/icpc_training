@@ -57,16 +57,10 @@ void solve() {
 int main() {
     while ((K = read()) && (M = read()) && (N = read())) {
         init();
-        // for (int i = 1; i <= 6; i++) {
-        //     cout << edges[i].to << edges[i].next << endl;
-        // }
         for (ll i = 0; i < K; i++) {
             ll g = read(), b = read();
             insert(g, b + M, 0); insert(b + M, g, 0);
         }
-        // for (int i = 1; i <= top; i++) {
-        //     cout << edges[i].to << edges[i].next << endl;
-        // }
         solve();
     }
     return 0;
